@@ -1,0 +1,262 @@
+CREATE DATABASE [Badan Peduli Covid Indonesia];
+
+CREATE TABLE Kota
+(
+ID_Kota NVARCHAR(50) NOT NULL PRIMARY KEY,
+NamaKota NVARCHAR(50) NOT NULL,
+StatusZona NVARCHAR(50) NOT NULL
+);
+INSERT INTO Kota
+(ID_Kota,NamaKota,StatusZona)
+VALUES
+('K01','Jakarta Timur','Kuning'),
+('K02','Jakarta Utara','Merah'),
+('K03','Jakarta Selatan','Kuning'),
+('K04','Jakarta Barat','Merah'),
+('K05','Jakarta Pusat','Merah'),
+('K06','Kepulauan Seribu','Hijau');
+
+CREATE TABLE [Rumah Sakit]
+(
+ID_Rumah_Sakit NVARCHAR (50) NOT NULL PRIMARY KEY,
+ID_Kota NVARCHAR (50) NOT NULL FOREIGN KEY REFERENCES Kota(ID_Kota),
+NamaRS NVARCHAR (50) NOT NULL,
+No_Telp INT,
+Jumlah_PasienCovid INT NOT NULL,
+);
+
+INSERT INTO [Rumah Sakit]
+(ID_Rumah_Sakit,ID_Kota,NamaRS,No_Telp,Jumlah_PasienCovid)
+VALUES ('RS01','K01','RS Sejahtera',587765,16),
+('RS02','K02','RS Jakarta',732285,21),
+('RS03','K03','RS Syukur',783470,5),
+('RS04','K04','RS Amanah',NULL,29),
+('RS05','K05','RS Mulia',472901,38),
+('RS06','K06','RS Mulia 2',749201,0),
+('RS07','K01','RS Teladan',740291,3),
+('RS08','K02','RS Berbagi',749201,47),
+('RS09','K03','RS Peduli',802934,20),
+('RS10','K04','RS Sehat',749345,30);
+
+CREATE TABLE Donasi
+(
+ID_Donasi NVARCHAR(50) NOT NULL PRIMARY KEY,
+Nama_Donasi NVARCHAR(50) NOT NULL,
+[Jumlah(Rp)] INT NOT NULL,
+Tanggal_Donasi DATE NOT NULL
+);
+INSERT INTO Donasi
+(ID_Donasi,Nama_Donasi,[Jumlah(Rp)],Tanggal_Donasi)
+VALUES
+('D01','Harapankita',24482400,'2020-03-20'),
+('D02','Bisakita',8870900,'2020-03-27'),
+('D03','FECINU',3599400,'2020-04-11'),
+('D04','PMI',4282000,'2020-04-19'),
+('D05','TokoIjo',19410000 ,'2020-04-26'),
+('D06','TokoOranye',8828000,'2020-05-20'),
+('D07','KitaMenang',2107300,'2020-05-20'),
+('D08','IndonesiaBisa',9560900,'2020-06-20'),
+('D09','JakartaWin',3075000,'2020-06-20'),
+('D10','IndoSociety',9366600,'2020-07-20'),
+('D11','ForJakarta',3599400,'2020-07-20'),
+('D12','BerantasCovid',4745900,'2020-07-20');
+
+CREATE TABLE Donatur
+(
+ID_Donatur NVARCHAR (50) NOT NULL PRIMARY KEY,
+NamaDonatur NVARCHAR (50) NOT NULL,
+Email_Donatur NVARCHAR (50),
+NoTelp NVARCHAR (50) NOT NULL,
+Alamat NVARCHAR (50), 
+);
+
+INSERT INTO Donatur
+(ID_Donatur,NamaDonatur,Email_Donatur,NoTelp,Alamat)
+VALUES ('DON01','Mahesa Alfaridz',NULL,'085892347921','Karet'),
+('DON02','Sekar Pradipta','s.pradipta@mail.com','085583495205','Dukuh'),
+('DON03','Vini Kusumaningrum','Vinikusuma@mail.com','085892347923','Rambutan'),
+('DON04','Andita Prasasti','Andita23@mail.com','081394759603','Kemang'),
+('DON05','Indra Hutabarat','Indra12@mail.com','081234595963','PIK'),
+('DON06','Elisabeth Valencia','abeth.v@mail.com','08962758395',NULL),
+('DON07','Nicolaus Saputra','Nicolputra@mail.com','08572948959','Monas'),
+('DON08','Aldian Wicaksana','Aldiaw@mail.com','082127864536','Bambu Apus');
+
+CREATE TABLE Pegawai
+(
+ID_Pegawai NVARCHAR(50) NOT NULL PRIMARY KEY,
+NamaPegawai NVARCHAR(50) NOT NULL,
+Tgl_Lahir DATE NOT NULL,
+email NVARCHAR(50),
+Telp NVARCHAR(50),
+Jabatan NVARCHAR(50) NOT NULL
+);
+
+INSERT INTO Pegawai
+(ID_Pegawai,NamaPegawai,Tgl_Lahir,email,Telp,Jabatan)
+VALUES
+('P01','Guy Navarro','1986-09-19','guy@mail.com','085003603234','Manager'),
+('P02','Blake Weiss','1991-09-28', 'blake@mail.com','081037806011','Staf'),
+('P03','Kirk Landry ','1976-11-13',' kirk@mail.com','085071709733','Manager'),
+('P04','Meredith Burke','2010-01-27','mere@mail.com','085442141026','Staf'),
+('P05','Roth Wood','1997-04-22',Null,'081628169580','Staf'),
+('P06','Lance Terry','1999-03-14','lance@mail.com',' 085183752396','Manager'),
+('P07','Scarlett Justice','1983-10-31','scarlett@mail.com','081431861315','Staf'),
+('P08','Jamal Hood','1992-10-28','jamal@mail.com','085091675696','Staf'),
+('P09','Ashton McDonald','2000-10-21','ashton@mail.com',null,'Manager'),
+('P10','Arden Anderson','1986-11-18','arden@mail.com','085937187682','Manager'),
+('P11','Walker Mendez','2000-10-25','walker@mail.com','081642634251','Staf'),
+('P12','Lydia Cameron','1983-11-13',null,'081310551128','Manager'),
+('P13','Craig Delgado','1988-09-13','craig@mail.com ',null,'Manager');
+
+CREATE TABLE [Detail Donasi]
+(
+ID_Detail_Donasi NVARCHAR (50) NOT NULL PRIMARY KEY,
+ID_Donasi NVARCHAR (50) NOT NULL FOREIGN KEY REFERENCES Donasi(ID_Donasi),
+ID_Rumah_Sakit NVARCHAR (50) NOT NULL FOREIGN KEY REFERENCES [Rumah Sakit](ID_Rumah_Sakit)
+);
+
+INSERT INTO [Detail Donasi]
+(ID_Detail_Donasi,ID_Donasi,ID_Rumah_Sakit)
+VALUES ('D01RS01','D01','RS01'),
+('D02RS05','D02','RS05'),
+('D02RS06','D02','RS06'),
+('D03RS03','D03','RS03'),
+('D04RS06','D04','RS06'),
+('D05RS04','D05','RS04'),
+('D06RS09','D06','RS09'),
+('D07RS03','D07','RS03'),
+('D08RS08','D08','RS08'),
+('D09RS01','D09','RS01'),
+('D10RS08','D10','RS08'),
+('D10RS10','D10','RS10'),
+('D11RS06','D11','RS06'),
+('D12RS05','D12','RS05');
+
+CREATE TABLE Transaksi
+(
+ID_Transaksi NVARCHAR (50) NOT NULL PRIMARY KEY,
+ID_Pegawai NVARCHAR (50) NOT NULL FOREIGN KEY REFERENCES Pegawai(ID_Pegawai),
+ID_Detail_Donasi NVARCHAR (50) NOT NULL FOREIGN KEY REFERENCES [Detail Donasi](ID_Detail_Donasi),
+No_Invoice nvarchar(50) NOT NULL,
+Tanggal DATE NOT NULL
+);
+
+INSERT INTO Transaksi
+(ID_Transaksi,ID_Pegawai,ID_Detail_Donasi,No_Invoice,Tanggal)
+VALUES
+('T01','P09','D10RS08','353854','2020-03-22'),
+('T02','P04','D11RS06','277996','2020-03-28'),
+('T03','P01','D09RS01','107570','2020-04-01'),
+('T04','P02','D08RS08','104993','2020-04-14'),
+('T05','P13','D11RS06','300058','2020-04-29'),
+('T06','P02','D07RS03','590234','2020-04-30'),
+('T07','P07','D05RS04','852460','2020-05-05'),
+('T08','P09','D05RS04','561153','2020-05-05'),
+('T09','P05','D10RS10','886492','2020-05-06'),
+('T10','P04','D03RS03','717899','2020-05-22'),
+('T11','P10','D02RS05','886398','2020-06-09'),
+('T12','P07','D02RS06','217066','2020-06-28'),
+('T13','P06','D12RS05','859142','2020-07-05'),
+('T14','P09','D01RS01','828212','2020-07-17'),
+('T15','P01','D06RS09','324103','2020-07-18'),
+('T16','P12','D04RS06','760766','2020-07-31');
+
+CREATE TABLE Pengiriman
+(
+ID_Pengiriman NVARCHAR (50) NOT NULL PRIMARY KEY,
+ID_Transaksi NVARCHAR (50) NOT NULL FOREIGN KEY REFERENCES Transaksi(ID_Transaksi),
+Nama_Kurir NVARCHAR (50) NOT NULL,
+Tanggal_Kirim DATE NOT NULL
+);
+
+INSERT INTO Pengiriman
+(ID_Pengiriman,ID_Transaksi,Nama_Kurir,Tanggal_Kirim)
+VALUES
+('S01','T01','Angga','2020-03-25'),
+('S02','T02','Galuh','2020-03-31'),
+('S03','T03','Rafi','2020-04-01'),
+('S04','T04','Figo','2020-04-17'),
+('S05','T05','Farid','2020-05-01'),
+('S06','T06','Nulfi','2020-05-04'),
+('S07','T07','Mario','2020-05-07'),
+('S08','T09','Komang','2020-05-08'),
+('S09','T08','Ojan','2020-05-09'),
+('S10','T10','Fikri','2020-05-24'),
+('S11','T11','Zuhal','2020-06-11'),
+('S12','T12','Billy','2020-07-01'),
+('S13','T13','Awan','2020-07-06'),
+('S14','T15','Pian','2020-07-20'),
+('S15','T14','Teguh','2020-07-20'),
+('S16','T16','Aldi','2020-08-02');
+
+CREATE TABLE Barang
+(
+ID_Barang NVARCHAR(50) NOT NULL PRIMARY KEY,
+NamaBarang NVARCHAR(50) NOT NULL,
+Harga INT NOT NULL
+);
+
+INSERT INTO Barang
+(ID_Barang,NamaBarang,Harga)
+VALUES
+('BAR01','Masker (1 Lusin)',234000),
+('BAR02','APD)',497000),
+('BAR03','P3K',244000),
+('BAR04','Sarung tangan',48700),
+('BAR05','Hand sanitizer (5 dirigen)',249000),
+('BAR06','Obat',76800),
+('BAR07','Face shield (1 lusin)',446000),
+('BAR08','Vitamin',125000),
+('BAR09','Sabun cuci tangan (3 dirigen)',164500),
+('BAR10','Disinfektan',70700),
+('BAR11','Ventilator',220000),
+('BAR12','Alat kesehatan',159300),
+('BAR13','Nasal swab',333800),
+('BAR14','Alat rapid test',276000),
+('BAR15','Reagen RTPCR',3245900),
+('BAR16','Viral transport media',1654000);
+
+CREATE TABLE Detail_Donatur
+(
+ID_DetailDonatur NVARCHAR(50) NOT NULL PRIMARY KEY,
+ID_Donatur NVARCHAR(50) FOREIGN KEY REFERENCES Donatur,
+ID_Donasi NVARCHAR(50) FOREIGN KEY REFERENCES Donasi
+);
+
+INSERT INTO Detail_Donatur
+(ID_DetailDonatur,ID_Donatur,ID_Donasi)
+VALUES
+('DON01D03','DON01','D03'),
+('DON01D04','DON01','D04'),
+('DON02D05','DON02','D05'),
+('DON03D01','DON03','D01'),
+('DON03D04','DON03','D04'),
+('DON04D07','DON04','D07'),
+('DON05D06','DON05','D06'),
+('DON06D08','DON06','D08'),
+('DON06D09','DON06','D09'),
+('DON06D12','DON06','D12'),
+('DON07D02','DON07','D02'),
+('DON07D10','DON07','D10'),
+('DON08D11','DON08','D11'),
+('DON08D07','DON08','D07');
+
+CREATE TABLE [Detail Transaksi]
+(
+ID_Detail_Transaksi NVARCHAR (50) NOT NULL PRIMARY KEY,
+ID_Transaksi NVARCHAR (50) NOT NULL FOREIGN KEY REFERENCES Transaksi(ID_Transaksi),
+ID_Barang NVARCHAR (50) NOT NULL FOREIGN KEY REFERENCES Barang(ID_Barang),
+Jumlah_Barang INT NOT NULL
+);
+
+INSERT INTO [Detail Transaksi]
+(ID_Detail_Transaksi,ID_Transaksi,ID_Barang,Jumlah_Barang)
+VALUES ('T01BAR11','T01','BAR11',5),('T01BAR13','T01','BAR13',7),('T02BAR15','T02','BAR15',1),('T02BAR10','T02','BAR10',5),
+('T03BAR08','T03','BAR08',7),('T03BAR11','T03','BAR11',10),('T04BAR16','T04','BAR16',2),('T04BAR14','T04','BAR14',10),
+('T05BAR09','T05','BAR09',5),('T05BAR13','T05','BAR13',8),('T06BAR04','T06','BAR04',9),('T06BAR13','T06','BAR13',5),
+('T07BAR05','T07','BAR05',8),('T07BAR06','T07','BAR06',10),('T07BAR07','T07','BAR07',20),('T08BAR02','T08','BAR02',10),
+('T08BAR14','T08','BAR14',10),('T09BAR01','T09','BAR01',20),('T09BAR08','T09','BAR08',10),('T10BAR10','T10','BAR10',5),
+('T10BAR15','T10','BAR15',1),('T11BAR02','T11','BAR02',8),('T11BAR01','T11','BAR01',5),('T11BAR04','T11','BAR04',10),
+('T12BAR12','T12','BAR12',3),('T12BAR14','T12','BAR14',10),('T13BAR08','T13','BAR08',12),('T13BAR15','T13','BAR15',1),
+('T14BAR13','T14','BAR13',15),('T14BAR15','T14','BAR15',6),('T15BAR16','T15','BAR16',2),('T15BAR14','T15','BAR14',20),
+('T16BAR04','T16','BAR04',20),('T16BAR16','T16','BAR16',2);
