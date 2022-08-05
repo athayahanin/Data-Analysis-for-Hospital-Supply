@@ -3,235 +3,109 @@
 SELECT [Rumah Sakit].* FROM [Rumah Sakit] INNER JOIN Kota 
 ON [Rumah Sakit].ID_Kota=Kota.ID_Kota
 WHERE [Rumah Sakit].ID_Kota IN
-(SELECT ID_Kota FROM Kota WHERE ID_Kota='K05');
+	(SELECT ID_Kota FROM Kota WHERE ID_Kota='K05');
 -----------------------------------------------------------------------------------------------------------------------------
-/*Question 2:
+/*Question 2: Menampilkan data pegawai yang tidak pernah melakukan transaksi.*/
+
 SELECT Pegawai.* FROM Pegawai
 WHERE NOT EXISTS
-(SELECT ID_Pegawai FROM Transaksi WHERE Pegawai.ID_Pegawai=Transaksi.ID_Pegawai);
+	(SELECT ID_Pegawai FROM Transaksi 
+	WHERE Pegawai.ID_Pegawai=Transaksi.ID_Pegawai);
+-----------------------------------------------------------------------------------------------------------------------------
+/*Question 3: Menampilkan nama kurir yang melakukan pengiriman barang lebih dari rata-rata beserta jumlah
+barang yang dikirimnya diurutkan berdasarkan abjad nama kurir.*/
 
-SELECT NamaRS, No_Telp FROM [Rumah Sakit] WHERE Jumlah_PasienCovid=0;
+SELECT Pengiriman.Nama_Kurir, SUM([DetailTransaksi].Jumlah_Barang) AS [Jumlah Barang yang Dikirim]
+FROM Pengiriman INNER JOIN Transaksi ON Pengiriman.ID_Transaksi=Transaksi.ID_Transaksi
+INNER JOIN [Detail Transaksi] ON Transaksi.ID_Transaksi=[DetailTransaksi].ID_Transaksi
+GROUP BY Pengiriman.Nama_Kurir
+HAVING SUM([Detail Transaksi].Jumlah_Barang) >
+	(SELECT AVG(Jumlah_Barang) FROM [Detail Transaksi])
+ORDER BY Pengiriman.Nama_Kurir;
+-----------------------------------------------------------------------------------------------------------------------------
+/*Question 4: Menampilkan nama rumah sakit yang tidak memiliki pasien positif covid beserta nomor teleponnya.*/
 
-ALTER TABLE Transaksi ADD [Total Transaksi] INT;
+SELECT NamaRS, No_Telp FROM [Rumah Sakit] 
+WHERE Jumlah_PasienCovid=0;
+-----------------------------------------------------------------------------------------------------------------------------
+/*Question 5: Menampilkan seluruh data transaksi yang dilakukan pada bulan Juni.*/
 
- 
-SELECT * FROM Transaksi;
-SELECT * FROM [Detail Transaksi];
-SELECT * FROM Donasi;
-SELECT * FROM Donatur;
-SELECT * FROM [Detail Donasi]
-SELECT * FROM Detail_Donatur;
-SELECT * FROM Barang;
-SELECT * FROM Kota;
-SELECT * FROM Pegawai;
-SELECT * FROM Pengiriman;
-SELECT * FROM [Rumah Sakit];
+SELECT Transaksi.* FROM Transaksi 
+WHERE Tanggal LIKE '2020-06%';
+-----------------------------------------------------------------------------------------------------------------------------
+/*Question 6: Menampilkan semua data rumah sakit yang berada di zona merah urut dengan jumlah pasiennya.*/
 
-SELECT * FROM Barang;
-SELECT * FROM [Detail Transaksi];
-SELECT Transaksi.[ID_Transaksi],Transaksi.ID_Pegawai,Transaksi.ID_Detail_Donasi,Transaksi.No_Invoice,Transaksi.Tanggal, SUM(Barang.Harga*[Detail Transaksi].Jumlah_Barang) AS [Total Transaksi] FROM Transaksi 
-INNER JOIN [Detail Transaksi] ON Transaksi.ID_Transaksi=[Detail Transaksi].ID_Transaksi 
-INNER JOIN Barang ON [Detail Transaksi].ID_Barang=Barang.ID_Barang
-GROUP BY Transaksi.ID_Transaksi,Transaksi.ID_Pegawai,Transaksi.ID_Detail_Donasi,Transaksi.No_Invoice,Transaksi.Tanggal;
-
-#menunjukkan semua data rumah sakit yang berada di zona merah 
 SELECT [Rumah Sakit].*
 FROM [Rumah Sakit] INNER JOIN Kota
 ON [Rumah Sakit].ID_Kota=Kota.ID_Kota
 WHERE Kota.StatusZona='Merah'
 ORDER BY [Rumah Sakit].Jumlah_PasienCovid DESC;
+-----------------------------------------------------------------------------------------------------------------------------
+/*Question 7: Menampilkan jumlah donasi yang diterima setiap rumah sakit dan menampikan jumlah pasien
+diurutkan berdasarkan jumlah donasi.*/
 
-#menunjukkan jumlah donasi yang diterima setiap rumah sakit, diurutkan dari jumlah donasi yang paling tinggi
 SELECT [Rumah Sakit].NamaRS,[Rumah Sakit].Jumlah_PasienCovid,SUM(Donasi.[Jumlah(Rp)]) AS [Jumlah Donasi yang Diterima]
 FROM [Rumah Sakit] INNER JOIN [Detail Donasi] ON [Rumah Sakit].ID_Rumah_Sakit=[Detail Donasi].ID_Rumah_Sakit
 INNER JOIN Donasi ON [Detail Donasi].ID_Donasi=Donasi.ID_Donasi
 GROUP BY [Rumah Sakit].NamaRS, [Rumah Sakit].Jumlah_PasienCovid
 ORDER BY [Jumlah Donasi yang Diterima] DESC;
+-----------------------------------------------------------------------------------------------------------------------------
+/*Question 8: Menampilkan seluruh data donatur yang berdonasi lebih dari 1 kali*/
 
-#menunjukkan seluruh data donatur yang berdonasi lebih dari 1 kali
 SELECT Donatur.* 
 FROM Donatur INNER JOIN Detail_Donatur ON Donatur.ID_Donatur=Detail_Donatur.ID_Donatur
 INNER JOIN Donasi ON Detail_Donatur.ID_Donasi=Donasi.ID_Donasi
 GROUP BY Donatur.ID_Donatur,Donatur.NamaDonatur,Donatur.Email_Donatur,Donatur.NoTelp,Donatur.Alamat
 HAVING COUNT([Detail_Donatur].ID_Donatur)>1;
+-----------------------------------------------------------------------------------------------------------------------------
+/*Question 9: Menampilkan data nama pegawai, email pegawai, dan no telp pegawai 
+yang menangani transaksi dan merupakan manager*/
 
-#menunjukkan data nama pegawai, email pegawai, dan no telp pegawai yang menangani transaksi dan merupakan manager
 SELECT Pegawai.ID_Pegawai, NamaPegawai,Pegawai.email,Pegawai.Telp
 FROM Pegawai INNER JOIN Transaksi ON Pegawai.ID_Pegawai=Transaksi.ID_Pegawai
 WHERE Pegawai.Jabatan='Manager'
 GROUP BY Pegawai.NamaPegawai,Pegawai.email,Pegawai.Telp,Pegawai.ID_Pegawai,Pegawai.Jabatan,Pegawai.Tgl_Lahir
 ORDER BY Pegawai.ID_Pegawai;
+-----------------------------------------------------------------------------------------------------------------------------
+/*Question 10: Menampilkan seluruh data barang yang harganya melebihi rata rata seluruh barang*/
 
-#menunjukkan seluruh data barang yang harganya melebihi rata rata seluruh barang
 SELECT * FROM Barang
-WHERE Harga>(SELECT AVG(Harga) FROM Barang);
+WHERE Harga>
+	(SELECT AVG(Harga) FROM Barang);
+-----------------------------------------------------------------------------------------------------------------------------
+/*Question 11: Menampilkan nama pegawai beserta barang yang ditangani
+untuk mengetahui pertanggung jawaban barang tersebut*/
 
-SELECT Pengiriman.Nama_Kurir, SUM([Detail Transaksi].Jumlah_Barang) AS [Jumlah Barang yang Dikirim]
-FROM Pengiriman INNER JOIN Transaksi ON Pengiriman.ID_Transaksi=Transaksi.ID_Transaksi
-INNER JOIN [Detail Transaksi] ON Transaksi.ID_Transaksi=[Detail Transaksi].ID_Transaksi
-GROUP BY Pengiriman.Nama_Kurir
-HAVING SUM([Detail Transaksi].Jumlah_Barang) > 
-	(SELECT AVG(Jumlah_Barang) FROM [Detail Transaksi])
-ORDER BY Pengiriman.Nama_Kurir;
-
-SELECT AVG([Detail Transaksi].Jumlah_Barang) FROM [Detail Transaksi];
-
-SELECT Kota.NamaKota, sum([Rumah Sakit].Jumlah_PasienCovid) AS Jumlah_PasienCovidRS
-FROM Kota INNER JOIN [Rumah Sakit] ON Kota.ID_Kota=[Rumah Sakit].ID_Kota
-GROUP BY Kota.NamaKota
-HAVING sum([Rumah Sakit].Jumlah_PasienCovid)> (SELECT AVG (Jumlah_PasienCovid), sum([Rumah Sakit].Jumlah_PasienCovid) AS Jumlah_PasienCovidRS FROM Kota INNER JOIN [Rumah Sakit] on Kota.ID_Kota=[Rumah Sakit].ID_Kota GROUP BY NamaKota AS Jumlah_PasienCovidRS);
-ORDER BY Jumlah_PasienCovidRS DESC;
-
-#menunjukan nama pegawai beserta barang yang ditangani untuk mengetahui pertanggung jawaban barang tersebut ke siapa.
 SELECT Pegawai.NamaPegawai, Barang.NamaBarang, Barang.ID_Barang
 FROM Pegawai INNER JOIN Transaksi ON Pegawai.ID_Pegawai=Transaksi.ID_Pegawai 
 INNER JOIN [Detail Transaksi] ON Transaksi.ID_Transaksi=[Detail Transaksi].ID_Transaksi
 INNER JOIN Barang ON [Detail Transaksi].ID_Barang=Barang.ID_Barang
 GROUP BY NamaPegawai,NamaBarang,Barang.ID_Barang;
-
-#menunjukan rumah sakit yang mendapatkan donasi diatas pada bulan maret untuk mengetahui rumah sakit mana yang siap lebih awal dalam penanganan covid 19
-SELECT [Rumah Sakit].NamaRS, Donasi.Tanggal_Donasi
-FROM [Rumah Sakit] INNER JOIN [Detail Donasi] ON [Rumah Sakit].ID_Rumah_Sakit=[Detail Donasi].ID_Rumah_Sakit
-INNER JOIN Donasi ON [Detail Donasi].ID_Donasi=Donasi.ID_Donasi
-WHERE Tanggal_Donasi IN (SELECT Tanggal_Donasi FROM Donasi WHERE Tanggal_Donasi LIKE '2020-03%');
+-----------------------------------------------------------------------------------------------------------------------------
+/*Question 12: Menampilkan rumah sakit yang mendapatkan donasi diatas bulan maret 
+untuk mengetahui rumah sakit mana yang siap lebih awal dalam penanganan Covid 19*/
 
 SELECT [Rumah Sakit].NamaRS, Donasi.Tanggal_Donasi
 FROM [Rumah Sakit] INNER JOIN [Detail Donasi] ON [Rumah Sakit].ID_Rumah_Sakit=[Detail Donasi].ID_Rumah_Sakit
 INNER JOIN Donasi ON [Detail Donasi].ID_Donasi=Donasi.ID_Donasi
-WHERE Tanggal_Donasi LIKE '2020-03%';
+WHERE Tanggal_Donasi IN 
+	(SELECT Tanggal_Donasi FROM Donasi WHERE Tanggal_Donasi LIKE '2020-03%');
+-----------------------------------------------------------------------------------------------------------------------------
+/*Question 13: Menampilkan stok masing masing barang donasi 
+untuk mengetahui kelangkaan barang dari yang paling langka ke yang paling banyak.*/
 
-#menunjukan stok masing masing barang donasi untuk mengetahui kelangkaan barang dari yang paling langka ke yang paling banyak.
 SELECT Barang.NamaBarang, sum([Detail Transaksi].Jumlah_Barang) AS [Stock Barang]
 FROM Barang INNER JOIN [Detail Transaksi] ON Barang.ID_Barang=[Detail Transaksi].ID_Barang
 GROUP BY Barang.NamaBarang
 ORDER BY [Stock Barang];
+-----------------------------------------------------------------------------------------------------------------------------
+/*Question 14: Menambahkan kolom total transaksi untuk tiap transaksi yang dilakukan pada tabel transaksi dan
+tampilkan seluruh data tabel transaksi setelah penambahan kolom tersebut.*/
 
-SELECT Transaksi.* FROM Transaksi WHERE Tanggal LIKE '2020-06%';
-
-alter table Transaksi drop column [Total Transaksi];
-
---------------------------------
-SELECT [Rumah Sakit].*
-FROM [Rumah Sakit] INNER JOIN Kota
-ON [Rumah Sakit].ID_Kota=Kota.ID_Kota
-WHERE Kota.StatusZona='Merah'
-ORDER BY [Rumah Sakit].Jumlah_PasienCovid DESC;
-
-SELECT Pegawai.NamaPegawai, Barang.NamaBarang
-FROM Pegawai INNER JOIN Transaksi ON Pegawai.ID_Pegawai=Transaksi.ID_Pegawai 
-INNER JOIN [Detail Transaksi] ON Transaksi.ID_Transaksi=[Detail Transaksi].ID_Transaksi
+SELECT Transaksi.[ID_Transaksi],Transaksi.ID_Pegawai,Transaksi.ID_Detail_Donasi,Transaksi.No_Invoice,Transaksi.Tanggal, 
+SUM(Barang.Harga*[Detail Transaksi].Jumlah_Barang) AS [Total Transaksi] FROM Transaksi 
+INNER JOIN [Detail Transaksi] ON Transaksi.ID_Transaksi=[Detail Transaksi].ID_Transaksi 
 INNER JOIN Barang ON [Detail Transaksi].ID_Barang=Barang.ID_Barang
-GROUP BY NamaPegawai,NamaBarang;
+GROUP BY Transaksi.ID_Transaksi,Transaksi.ID_Pegawai,Transaksi.ID_Detail_Donasi,Transaksi.No_Invoice,Transaksi.Tanggal;
 
-update Barang set NamaBarang='APD' where ID_Barang='BAR02';
 
-SELECT [Rumah Sakit].NamaRS, Donasi.Tanggal_Donasi
-FROM [Rumah Sakit] INNER JOIN [Detail Donasi] ON [Rumah Sakit].ID_Rumah_Sakit=[Detail Donasi].ID_Rumah_Sakit
-INNER JOIN Donasi ON [Detail Donasi].ID_Donasi=Donasi.ID_Donasi
-WHERE Tanggal_Donasi IN (SELECT Tanggal_Donasi FROM Donasi WHERE Tanggal_Donasi LIKE '2020-03%');
-
-SELECT Barang.NamaBarang, sum([Detail Transaksi].Jumlah_Barang) AS [Stock Barang]
-FROM Barang INNER JOIN [Detail Transaksi] ON Barang.ID_Barang=[Detail Transaksi].ID_Barang
-GROUP BY Barang.NamaBarang
-ORDER BY [Stock Barang];
----------------------------------------------
-select Kota.NamaKota, sum([Rumah Sakit].Jumlah_PasienCovid) As Total_Pasien
-From Kota , [Rumah Sakit]
-Where Kota.ID_Kota = [Rumah Sakit].ID_Kota
-Group by NamaKota
-having sum(Jumlah_PasienCovid) = 
-        (select max(Total_Pasien) from 
-                (select sum(Jumlah_PasienCovid) As Total_Pasien
-                From [Rumah Sakit]
-                Group by ID_Kota) AS Total_Pasien);
-
-Select Barang.NamaBarang,sum([Detail Transaksi].Jumlah_Barang) As Total_Barang
-From Barang inner join [Detail Transaksi]
-on Barang.ID_Barang=[Detail Transaksi].ID_Barang
-Group by NamaBarang
-Order by Total_Barang DESC;
-
-select [Rumah Sakit].ID_Rumah_Sakit,[Rumah Sakit].No_Telp,
-[Rumah Sakit].Jumlah_PasienCovid
-From [Rumah Sakit] inner join [Detail Donasi]
-On [Rumah Sakit].ID_Rumah_Sakit=[Detail Donasi].ID_Rumah_Sakit
-Inner join Transaksi
-on [Detail Donasi].ID_Detail_Donasi=Transaksi.ID_Detail_Donasi
-inner join [Detail Transaksi]
-on [Transaksi].ID_Transaksi=[Detail Transaksi].ID_Transaksi
-inner join Barang
-on [Detail Transaksi].ID_Barang=Barang.ID_Barang
-where NamaBarang = 'Ventilator' ;
-
-Select Donatur.NamaDonatur,Donatur.Email_Donatur, count(Detail_Donatur.ID_Donatur) As Kali_Donasi
-From Donatur,Detail_Donatur
-Where Donatur.ID_Donatur=Detail_Donatur.ID_Donatur
-Group by Email_Donatur,NamaDonatur
-Having count(Detail_Donatur.ID_Donatur) > 1
-Order by NamaDonatur;
-
-select Kota.StatusZona,sum(Donasi.[Jumlah(Rp)]) As Total_Donasi_Zona
-From Kota inner join [Rumah Sakit]
-on Kota.ID_Kota=[Rumah Sakit].ID_Kota
-inner join [Detail Donasi]
-on [Rumah Sakit].ID_Rumah_Sakit=[Detail Donasi].ID_Rumah_Sakit
-inner join [Donasi]
-on [Detail Donasi].ID_Donasi=Donasi.ID_Donasi
-Group by StatusZona
-Order by Total_Donasi_Zona;
-
-select Donatur.NamaDonatur, sum(Donasi.[Jumlah(Rp)]) As Jumlah_Donasi
-from Donatur inner join Detail_donatur
-on Donatur.ID_Donatur=Detail_Donatur.ID_Donatur
-inner join Donasi
-on Detail_Donatur.ID_Donasi=Donasi.ID_Donasi
-Group by NamaDonatur
-having sum(Donasi.[Jumlah(Rp)]) > 
-        (select AVG(Jumlah_Donasi) from
-                (select Donatur.NamaDonatur, sum(Donasi.[Jumlah(Rp)]) As Jumlah_Donasi
-                from Donatur inner join Detail_donatur
-                on Donatur.ID_Donatur=Detail_Donatur.ID_Donatur
-                inner join Donasi
-                on Detail_Donatur.ID_Donasi=Donasi.ID_Donasi
-                Group by NamaDonatur) AS Jumlah_Donasi);
-
-select Kota.NamaKota,sum([Rumah Sakit].Jumlah_PasienCovid)
-As Total_Pasien
-From Kota inner join [Rumah Sakit]
-on Kota.ID_Kota=[Rumah Sakit].ID_Kota
-Group by NamaKota
-Having sum([Rumah Sakit].Jumlah_PasienCovid) > 
-        (select AVG(Total_Pasien) From
-                (select Kota.NamaKota,sum([Rumah Sakit].Jumlah_PasienCovid)
-                As Total_Pasien
-                From Kota inner join [Rumah Sakit]
-                on Kota.ID_Kota=[Rumah Sakit].ID_Kota
-                Group by NamaKota) as Total_Pasien);
-
-Select Barang.NamaBarang, Pengiriman.Nama_Kurir,Pengiriman.Tanggal_Kirim
-From Barang inner join [Detail Transaksi]
-on Barang.ID_Barang=[Detail Transaksi].ID_Barang
-inner join Transaksi
-on [Detail Transaksi].ID_Transaksi=Transaksi.ID_Transaksi
-inner join Pengiriman
-on Transaksi.ID_Transaksi=Pengiriman.ID_Transaksi;
-
-select Pengiriman.Nama_Kurir,Kota.NamaKota,Kota.StatusZona
-from Pengiriman inner join Transaksi
-on Pengiriman.ID_Transaksi=Transaksi.ID_Transaksi
-inner join [Detail Donasi]
-on Transaksi.ID_Detail_Donasi=[Detail Donasi].ID_Detail_Donasi
-inner join [Rumah Sakit]
-on [Rumah Sakit].ID_Rumah_Sakit=[Rumah Sakit].ID_Rumah_Sakit
-inner join Kota
-on [Rumah Sakit].ID_Kota=Kota.ID_Kota;
-
-select [Rumah Sakit].NamaRS,sum([Rumah Sakit].Jumlah_PasienCovid) As Total_Pasien,sum([Detail Transaksi].Jumlah_Barang) As Total_Barang
-from [Rumah Sakit] inner join [Detail Donasi]
-on [Rumah Sakit].ID_Rumah_Sakit=[Detail Donasi].ID_Rumah_Sakit
-inner join Transaksi
-on [Detail Donasi].ID_Detail_Donasi=[Transaksi].ID_Detail_Donasi
-inner join [Detail Transaksi]
-on [Detail Transaksi].ID_Transaksi=[Transaksi].ID_Transaksi
-Group by NamaRS
-Order by sum([Rumah Sakit].Jumlah_PasienCovid) DESC;
