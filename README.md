@@ -1,6 +1,6 @@
 A final project from Database Management System class. The case are all in Indonesian (Bahasa).
 
-Badan Peduli Covid Indonesia (BPCI)🦠
+**Badan Peduli Covid Indonesia (BPCI)🦠**
 
 Sebuah Lembaga Kesehatan yang bernama Badan Peduli Covid Indonesia (BPCI) memerlukan basis data untuk menghimpun dana donasi dari berbagai program donasi dan mendistribusikan hasil donasi tersebut dalam bentuk barang ke berbagai rumah sakit di Provinsi DKI Jakarta. Lembaga ini mendata donasi yang diberikan, berbagai transaksi, dan barang yang dibeli dengan donasi tersebut. Kehadiran SQL dan R diharapkan dapat menjadi salah satu dari sekian banyak tools yang dapat digunakan pembuat dan pembaca program untuk mengetahui relasi antara yang satu dengan yang lain. Hal ini baik untuk dalam mengurangi inkonsistensi dalam menilai data yang ada serta mempermudah dalam hal analisis kondisi zona tiap wilayah dan persebaran pasien Covid di tiap kota di DKI Jakarta.
 
